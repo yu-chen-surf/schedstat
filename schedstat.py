@@ -7,6 +7,8 @@
 import time
 import os
 import math
+import sys
+import getopt
 
 cpu_stats = ['yld_count',
              'dummy',
@@ -122,11 +124,26 @@ def diff_sched_stats(baseline, current):
 # Main loop
 baseline = read_schedstat()
 
+interval = 1
+
+try:
+    opts, args = getopt.getopt(sys.argv[1:], '-i:',
+                 ['interval='])
+    for opt_name, opt_value in opts:
+        if opt_name in ('-i', '--interval'):
+            interval = int(opt_value)
+
+except getopt.GetoptError:
+    # 128 - invalid argument to exit
+    print("Invaid input parameters. Please use -i interval or without any parameter")
+    sys.exit(128)
+
 while True:
     # Sleep till new data will become available after 1 second
     # TODO: customizable intervals and count like *stat do
     now = time.time()
-    time.sleep(math.ceil(now) - now)
+    #time.sleep(math.ceil(now) - now)
+    time.sleep(interval)
 
     current = read_schedstat()
 
